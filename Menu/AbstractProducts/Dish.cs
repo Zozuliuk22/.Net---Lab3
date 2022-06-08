@@ -20,13 +20,13 @@ namespace Menu
 
                 if (Ingredients.Count > 0)
                 {
-                    list += "Ingredients: ";
+                    list += "\n\tIngredients: ";
                     foreach (var ingredient in Ingredients)
                         list += ingredient + ", ";
 
                     if (Additions.Count > 0)
                     {
-                        list = list.Substring(0, list.Length - 2) + ".\nAdditions: ";
+                        list = list.Substring(0, list.Length - 2) + ".\n\tAdditions: ";
                         foreach (var addition in Additions)
                             list += addition + ", ";
 

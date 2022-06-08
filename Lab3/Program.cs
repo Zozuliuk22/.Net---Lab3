@@ -1,5 +1,4 @@
 ﻿using System;
-using Menu.Interfaces;
 using Application;
 
 namespace Lab3
@@ -14,24 +13,16 @@ namespace Lab3
             customer.Name = ConsoleViewer.ReadName();
             customer.RoomNumber = ConsoleViewer.ReadRoomNumber();
 
-            GetFoodTypes();
+            var servant = new Servant();
 
             foreach (var factory in BeginningData.Factories)
             {
                 var answer = ConsoleViewer.ReadAnswer(factory.Key);
                 if(answer == ConsoleKey.Y)
-                    customer.Order.Add(factory.Key, Servant.ServeFood(factory.Value));
+                    customer.Order.Add(factory.Key, servant.ServeFood(factory.Value));
             }
 
             ConsoleViewer.ShowOrder(customer);
-        }        
-
-        static void GetFoodTypes()
-        {
-            var type = typeof(IFactory);
-            var methods = type.GetMethods();
-            foreach(var method in methods)
-                BeginningData.FoodTypes.Add(method.Name.Replace("Create", ""), method);
         }
     }
 }

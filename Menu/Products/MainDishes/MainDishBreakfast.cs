@@ -19,8 +19,8 @@ namespace Menu.Products.MainDishes
             var service = new StorageService();
 
             return service.GetAllIngredients()
-                          .Where(i => i.Category != Categories.Alcohol ||
-                                      i.Category != Categories.Sweets  ||
+                          .Where(i => i.Category != Categories.Alcohol &&
+                                      i.Category != Categories.Sweets  &&
                                       i.Category != Categories.Drinks)
                           .ToList();
         }

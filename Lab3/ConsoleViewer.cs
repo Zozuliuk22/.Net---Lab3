@@ -18,24 +18,29 @@ namespace Application
                 Console.WriteLine($"\t{i+1} - {ingredients[i]}");
         }
 
-
-
         public static void ShowOrder(Customer customer)
         {
             Console.WriteLine();
             Console.WriteLine($"Order for {customer.Name}, room {customer.RoomNumber}.");
-            foreach (var position in customer.Order)
+            if (customer.Order.Count > 0)
             {
-                Console.WriteLine(position.Key);
-                foreach (var dish in position.Value)
-                    Console.WriteLine($"\n{dish}");
+                foreach (var position in customer.Order)
+                {
+                    Console.WriteLine($"Your {position.Key}.");
+                    foreach (var dish in position.Value)
+                        Console.WriteLine($"\n{dish}");
+                }
             }
+            else 
+                Console.WriteLine("No dishes exist.");
         }
 
         public static ConsoleKey ReadAnswer(string mainWord)
         {
             Console.Write($"Do you want to have {mainWord} ? [y/n]  ");
-            return Console.ReadKey().Key;
+            var key = Console.ReadKey().Key;
+            Console.WriteLine();
+            return key;
         }
 
         public static string ReadName()
@@ -55,6 +60,25 @@ namespace Application
                 number = Console.ReadLine();
             }
             return roomNumber;
+        }
+
+        public static int ReadIngredient()
+        {
+            var position = 0;
+            Console.Write("Please, choose ingredient (or enter \"0\" to exit): ");
+            var number = Console.ReadLine();
+            while (!Int32.TryParse(number, out position))
+            {
+                Console.Write("Please, choose ingredient (or enter \"0\" to exit): ");
+                number = Console.ReadLine();
+            }
+            return position;
+        }
+
+        public static string ReadDescription()
+        {
+            Console.Write("\nPlease, enter description, if you need. If you don't need just tap \"Enter\": ");
+            return Console.ReadLine();
         }
     }
 }

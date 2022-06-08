@@ -9,8 +9,8 @@ namespace Menu.AbstractProducts
         public override string ToString()
         {
             if (string.IsNullOrWhiteSpace(CustomDescription))
-                return $"{MainDishTexts.Label}\n{Order}.";
-            return $"{MainDishTexts.Label}\n{Order} .\nDescription : {CustomDescription}";
+                return $"{MainDishTexts.Label} {Order}.";
+            return $"{MainDishTexts.Label} {Order}.\n\tDescription : {CustomDescription}";
         }
     }
 }

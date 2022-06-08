@@ -1,126 +1,124 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Reflection;
 using Menu;
 using Menu.Interfaces;
 using Menu.AbstractProducts;
+using System.Linq;
 
 namespace Application
 {
-    public static class Servant
+    public class Servant
     {
-        public static List<Dish> ServeFood(IFactory factory)
+        private Dictionary<string, MethodInfo> _createFoodTypesMethods = new();
+
+        private Dictionary<string, MethodInfo> _serveFoodTypesMethods = new();
+
+        private void InitializeCreateFoodTypesMethods()
+        {
+            var type = typeof(IFactory);
+            var methods = type.GetMethods();
+            foreach (var method in methods)
+                _createFoodTypesMethods.Add(method.Name.Replace("Create", ""), method);
+        }
+
+        private void InitializeServeFoodTypesMethods()
+        {
+            var type = typeof(Servant);
+            var methods = type.GetMethods()
+                              .Where(m => m.Name.ToLower().StartsWith("serve") && 
+                                         !m.Name.ToLower().EndsWith("food"));
+
+            foreach (var method in methods)
+                _serveFoodTypesMethods.Add(method.Name.Replace("Serve", ""), method);
+        }
+
+        public Servant()
+        {
+            InitializeCreateFoodTypesMethods();
+            InitializeServeFoodTypesMethods();
+        }
+
+        public List<Dish> ServeFood(IFactory factory)
         {
             var order = new List<Dish>();
 
-            foreach (var foodType in BeginningData.FoodTypes)
+            foreach (var foodType in _createFoodTypesMethods)
             {
                 var answer = ConsoleViewer.ReadAnswer(foodType.Key);
                 if (answer == ConsoleKey.Y)
                 {
-                    var result = foodType.Value.Invoke(factory, null);
-
-                    var appetizer = result as Appetizer;
-                    if (appetizer is not null)
-                        order.Add(ServeAppetizer(appetizer));
-
-                    var beverage = result as Beverage;
-                    if (beverage is not null)
-                        order.Add(ServeBeverage(beverage));
-
-                    var dessert = result as Dessert;
-                    if (dessert is not null)
-                        order.Add(ServeDessert(dessert));
-
-                    var mainDish = result as MainDish;
-                    if (mainDish is not null)
-                        order.Add(ServeMainDish(mainDish));
+                    var emptyDish = foodType.Value.Invoke(factory, null);
+                    var dish = _serveFoodTypesMethods[foodType.Key].Invoke(this, new object[] { emptyDish });
+                    if(dish != null) order.Add(dish as Dish);
                 }
             }
             return order;
         }
 
-        static Dish ServeAppetizer(Appetizer appetizer)
+        private Dish ServeDish(Dish dish)
         {
-            var ingredients = appetizer.GetIngredients();
+            var ingredients = dish.GetIngredients();
+            if (ingredients.Count == 0) return null;
+
             ConsoleViewer.ShowIngredients(ingredients);
-            Console.WriteLine("Choose ingredient: ");
-            int position = 1;
-            position = Int32.Parse(Console.ReadLine());
+
+            var position = ConsoleViewer.ReadIngredient();            
             while (position > 0 && position <= ingredients.Count)
             {
-                appetizer.AddIngredient(ingredients[position - 1]);
-                Console.WriteLine("Choose ingredient: ");
-                position = Int32.Parse(Console.ReadLine());
+                dish.AddIngredient(ingredients[position - 1]);
+                position = ConsoleViewer.ReadIngredient();
             }
-            Console.WriteLine("Enter description : ");
-            string description = Console.ReadLine();
-            appetizer.CustomDescription = description;
-            appetizer.AddGloves();
-            return appetizer;
+
+            if(dish.Ingredients.Count == 0) return null;
+            
+            dish.CustomDescription = ConsoleViewer.ReadDescription();
+            return dish;
         }
 
-        static Dish ServeBeverage(Beverage beverage)
+        public Dish ServeAppetizer(object dish)
         {
-            var ingredients = beverage.GetIngredients();
-            ConsoleViewer.ShowIngredients(ingredients);
-            Console.WriteLine("Choose ingredient: ");
-            int position = 1;
-            position = Int32.Parse(Console.ReadLine());
-            while (position > 0 && position <= ingredients.Count)
-            {
-                beverage.AddIngredient(ingredients[position - 1]);
-                Console.WriteLine("Choose ingredient: ");
-                position = Int32.Parse(Console.ReadLine());
-            }
-            Console.WriteLine("Enter description : ");
-            string description = Console.ReadLine();
-            beverage.CustomDescription = description;
-            beverage.AddIceCubes()
-                    .AddGlassLabel();
+            var appetizer = dish as Appetizer;
+            if (appetizer == null) return null;
 
-            return beverage;
+            var result = ServeDish(appetizer);
+            if(result == null) return null;
+
+            return (dish as Appetizer).AddGloves();
         }
 
-        static Dish ServeDessert(Dessert dessert)
+        public Dish ServeBeverage(object dish)
         {
-            var ingredients = dessert.GetIngredients();
-            ConsoleViewer.ShowIngredients(ingredients);
-            Console.WriteLine("Choose ingredient: ");
-            int position = 1;
-            position = Int32.Parse(Console.ReadLine());
-            while (position > 0 && position <= ingredients.Count)
-            {
-                dessert.AddIngredient(ingredients[position - 1]);
-                Console.WriteLine("Choose ingredient: ");
-                position = Int32.Parse(Console.ReadLine());
-            }
-            Console.WriteLine("Enter description : ");
-            string description = Console.ReadLine();
-            dessert.CustomDescription = description;
-            dessert.AddPresentationAttribute();
+            var beverage = dish as Beverage;
+            if (beverage == null) return null;
 
-            return dessert;
+            var result = ServeDish(beverage);
+            if (result == null) return null;
+
+            return (dish as Beverage).AddIceCubes()
+                                     .AddGlassLabel();
         }
 
-        static Dish ServeMainDish(MainDish mainDish)
+        public Dish ServeDessert(object dish)
         {
-            var ingredients = mainDish.GetIngredients();
-            ConsoleViewer.ShowIngredients(ingredients);
-            Console.WriteLine("Choose ingredient: ");
-            int position = 1;
-            position = Int32.Parse(Console.ReadLine());
-            while (position > 0 && position <= ingredients.Count)
-            {
-                mainDish.AddIngredient(ingredients[position - 1]);
-                Console.WriteLine("Choose ingredient: ");
-                position = Int32.Parse(Console.ReadLine());
-            }
-            Console.WriteLine("Enter description : ");
-            string description = Console.ReadLine();
-            mainDish.CustomDescription = description;
-            mainDish.AddGlassOfWater();
+            var dessert = dish as Dessert;
+            if (dessert == null) return null;
 
-            return mainDish;
+            var result = ServeDish(dessert);
+            if (result == null) return null;
+
+            return (dish as Dessert).AddPresentationAttribute();
+        }
+
+        public Dish ServeMainDish(object dish)
+        {
+            var mainDish = dish as MainDish;
+            if (mainDish == null) return null;
+
+            var result = ServeDish(mainDish);
+            if (result == null) return null;
+
+            return (dish as MainDish).AddGlassOfWater();
         }
     }
 }
