@@ -77,7 +77,8 @@ namespace Application
 
         public static string ReadDescription()
         {
-            Console.Write("\nPlease, enter description, if you need. If you don't need just tap \"Enter\": ");
+            Console.Write("\nPlease, enter description, if you need. " +
+                          "If you don't need just tap \"Enter\": ");
             return Console.ReadLine();
         }
     }

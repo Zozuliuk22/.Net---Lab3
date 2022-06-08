@@ -49,7 +49,8 @@ namespace Application
                 if (answer == ConsoleKey.Y)
                 {
                     var emptyDish = foodType.Value.Invoke(factory, null);
-                    var dish = _serveFoodTypesMethods[foodType.Key].Invoke(this, new object[] { emptyDish });
+                    var dish = _serveFoodTypesMethods[foodType.Key]
+                               .Invoke(this, new object[] { emptyDish });
                     if(dish != null) order.Add(dish as Dish);
                 }
             }
