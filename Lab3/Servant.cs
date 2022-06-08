@@ -25,9 +25,9 @@ namespace Application
         private void InitializeServeFoodTypesMethods()
         {
             var type = typeof(Servant);
-            var methods = type.GetMethods()
+            var methods = type.GetMethods(BindingFlags.NonPublic | BindingFlags.Instance)
                               .Where(m => m.Name.ToLower().StartsWith("serve") && 
-                                         !m.Name.ToLower().EndsWith("food"));
+                                         !m.Name.ToLower().EndsWith("dish"));
 
             foreach (var method in methods)
                 _serveFoodTypesMethods.Add(method.Name.Replace("Serve", ""), method);
@@ -76,7 +76,7 @@ namespace Application
             return dish;
         }
 
-        public Dish ServeAppetizer(object dish)
+        private Dish ServeAppetizer(object dish)
         {
             var appetizer = dish as Appetizer;
             if (appetizer == null) return null;
@@ -87,7 +87,7 @@ namespace Application
             return (dish as Appetizer).AddGloves();
         }
 
-        public Dish ServeBeverage(object dish)
+        private Dish ServeBeverage(object dish)
         {
             var beverage = dish as Beverage;
             if (beverage == null) return null;
@@ -99,7 +99,7 @@ namespace Application
                                      .AddGlassLabel();
         }
 
-        public Dish ServeDessert(object dish)
+        private Dish ServeDessert(object dish)
         {
             var dessert = dish as Dessert;
             if (dessert == null) return null;
@@ -110,7 +110,7 @@ namespace Application
             return (dish as Dessert).AddPresentationAttribute();
         }
 
-        public Dish ServeMainDish(object dish)
+        private Dish ServeMainDish(object dish)
         {
             var mainDish = dish as MainDish;
             if (mainDish == null) return null;
