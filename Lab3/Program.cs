@@ -15,7 +15,7 @@ namespace Lab3
 
             var servant = new Servant();
 
-            foreach (var factory in BeginningData.Factories)
+            foreach (var factory in Constants.Factories)
             {
                 var answer = ConsoleViewer.ReadAnswer(factory.Key);
                 if(answer == ConsoleKey.Y)

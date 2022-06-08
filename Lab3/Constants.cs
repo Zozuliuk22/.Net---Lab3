@@ -4,7 +4,7 @@ using Menu.Factories;
 
 namespace Application
 {
-    public static class BeginningData
+    public static class Constants
     {
         public static Dictionary<string, IFactory> Factories { get; } = new()
         {
