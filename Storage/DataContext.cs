@@ -4,7 +4,7 @@ namespace Storage
 {
     public static class DataContext
     {
-        public static List<Ingredient> Ingredients = new()
+        public static List<Ingredient> Ingredients { get; } = new()
         {
             new Ingredient
             {
