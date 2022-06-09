@@ -1,6 +1,7 @@
 ﻿using Storage;
 using System;
 using System.Collections.Generic;
+using System.Text;
 
 namespace Menu
 {
@@ -16,24 +17,23 @@ namespace Menu
         { 
             get
             {
-                var list = String.Empty;
+                var sb = new StringBuilder();
 
                 if (Ingredients.Count > 0)
                 {
-                    list += "\n\tIngredients: ";
+                    sb.Append("\n\tIngredients: ");
                     foreach (var ingredient in Ingredients)
-                        list += ingredient + ", ";
+                        sb.Append($"{ingredient}, ");
 
                     if (Additions.Count > 0)
                     {
-                        list = list.Substring(0, list.Length - 2) + ".\n\tAdditions: ";
+                        sb.Remove(sb.Length - 2, 2);
+                        sb.Append(".\n\tAdditions: ");
                         foreach (var addition in Additions)
-                            list += addition + ", ";
-
-                        return list.Substring(0, list.Length - 2);
+                            sb.Append($"{addition}, ");
                     }
 
-                    return list.Substring(0, list.Length - 2);
+                    return sb.Remove(sb.Length - 2, 2).ToString();
                 }                
                 
                 return "nothing";
